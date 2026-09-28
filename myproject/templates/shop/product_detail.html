@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} — FlowerPower</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="{% url 'shop:index' %}" class="logo">
+                    <span class="logo-icon">✦</span>
+                    <span class="logo-text">Flower<span>Power</span></span>
+                </a>
+                <form action="{% url 'shop:catalog' %}" method="GET" class="search-form">
+                    <input type="text" name="search" placeholder="Поиск цветов..." class="search-input">
+                    <button type="submit" class="search-btn">Х</button>
+                </form>
+                <div class="nav-right">
+                    <a href="{% url 'shop:catalog' %}" class="nav-link">Каталог</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'shop:profile' %}" class="nav-link">{{ user.username }}</a>
+                        <a href="{% url 'shop:logout' %}" class="nav-link">Выйти</a>
+                    {% else %}
+                        <a href="{% url 'shop:login' %}" class="nav-link">Войти</a>
+                        <a href="{% url 'shop:register' %}" class="nav-link btn-primary">Регистрация</a>
+                    {% endif %}
+                    <a href="{% url 'shop:cart' %}" class="nav-link cart-link">
+                        🛒
+                        {% if cart_count > 0 %}
+                            <span class="cart-badge">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="product-detail-section">
+            <div class="container">
+                <div class="product-detail-grid">
+                    <div class="product-detail-image">
+                        {% if product.id|divisibleby:5 %}
+                            <img src="/media/products/blue.jpg" alt="{{ product.name }}">
+                        {% elif product.id|divisibleby:3 %}
+                            <img src="/media/products/sunshine.jpg" alt="{{ product.name }}">
+                        {% elif product.id|divisibleby:2 %}
+                            <img src="/media/products/redfff.jpg" alt="{{ product.name }}">
+                        {% elif product.id|divisibleby:7 %}
+                            <img src="/media/products/red-white.jpg" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="/media/products/buket-roz.jpg" alt="{{ product.name }}">
+                        {% endif %}
+                    </div>
+
+                    <div class="product-detail-info">
+                        <h1>{{ product.name }}</h1>
+                        <p class="product-detail-category">{{ product.category.name }}</p>
+
+                        <div class="product-detail-price">
+                            {% if product.discount_price %}
+                                <span class="price-old-detail">{{ product.price }} ₽</span>
+                                <span class="price-current-detail">{{ product.discount_price }} ₽</span>
+                            {% else %}
+                                <span class="price-current-detail">{{ product.price }} ₽</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="product-detail-status">
+                            {% if product.in_stock %}
+                                <span class="status in-stock">В наличии</span>
+                            {% else %}
+                                <span class="status out-of-stock">Нет в наличии</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="product-detail-description">
+                            <h3>Описание</h3>
+                            <p>{{ product.description }}</p>
+                        </div>
+
+                        {% if product.in_stock %}
+                            <a href="{% url 'shop:add_to_cart' product.id %}" class="btn-add-cart-detail">В корзину</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>✦ Flower<span>Power</span></h3>
+                    <p>Цветы с душой по всей России</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Каталог</h4>
+                    <a href="{% url 'shop:catalog' %}">Все цветы</a>
+                    <a href="{% url 'shop:catalog' %}?sort=new">Новинки</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Контакты</h4>
+                    <a href="#">+7 (999) 999-99-99</a>
+                    <a href="#">info@flowerpower.ru</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 FlowerPower. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

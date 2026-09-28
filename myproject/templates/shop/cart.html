@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина — FlowerPower</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="{% url 'shop:index' %}" class="logo">
+                    <span class="logo-icon">✦</span>
+                    <span class="logo-text">Flower<span>Power</span></span>
+                </a>
+                <form action="{% url 'shop:catalog' %}" method="GET" class="search-form">
+                    <input type="text" name="search" placeholder="Поиск цветов..." class="search-input">
+                    <button type="submit" class="search-btn">Х</button>
+                </form>
+                <div class="nav-right">
+                    <a href="{% url 'shop:catalog' %}" class="nav-link">Каталог</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'shop:profile' %}" class="nav-link">{{ user.username }}</a>
+                        <a href="{% url 'shop:logout' %}" class="nav-link">Выйти</a>
+                    {% else %}
+                        <a href="{% url 'shop:login' %}" class="nav-link">Войти</a>
+                        <a href="{% url 'shop:register' %}" class="nav-link btn-primary">Регистрация</a>
+                    {% endif %}
+                    <a href="{% url 'shop:cart' %}" class="nav-link cart-link">
+                        🛒
+                        {% if cart_count > 0 %}
+                            <span class="cart-badge">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="cart-section">
+            <div class="container">
+                <h1>Корзина</h1>
+
+                {% if cart.items.all %}
+                    <div class="cart-items">
+                        {% for item in cart.items.all %}
+                            <div class="cart-item">
+                                <div class="cart-item-image">
+                                    {% if item.product.id|divisibleby:5 %}
+                                        <img src="/media/products/blue.jpg" alt="{{ item.product.name }}">
+                                    {% elif item.product.id|divisibleby:3 %}
+                                        <img src="/media/products/sunshine.jpg" alt="{{ item.product.name }}">
+                                    {% elif item.product.id|divisibleby:2 %}
+                                        <img src="/media/products/redfff.jpg" alt="{{ item.product.name }}">
+                                    {% elif item.product.id|divisibleby:7 %}
+                                        <img src="/media/products/red-white.jpg" alt="{{ item.product.name }}">
+                                    {% else %}
+                                        <img src="/media/products/buket-roz.jpg" alt="{{ item.product.name }}">
+                                    {% endif %}
+                                </div>
+                                <div class="cart-item-info">
+                                    <h3>{{ item.product.name }}</h3>
+                                    <span class="cart-item-price">{{ item.product.get_price }} ₽</span>
+                                </div>
+                                <div class="cart-item-quantity">
+                                    <form method="POST" action="{% url 'shop:update_cart' item.id %}" style="display:flex;gap:12px;align-items:center;">
+                                        {% csrf_token %}
+                                        <button type="submit" name="action" value="decrease">−</button>
+                                        <span>{{ item.quantity }}</span>
+                                        <button type="submit" name="action" value="increase">+</button>
+                                        <button type="submit" name="action" value="remove" class="btn-remove">✕</button>
+                                    </form>
+                                </div>
+                                <div class="cart-item-total">{{ item.get_total_price }} ₽</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="cart-total">
+                        <span>Итого:</span>
+                        <span>{{ cart.get_total_price }} ₽</span>
+                    </div>
+
+                    <div class="cart-actions">
+                        <a href="{% url 'shop:catalog' %}" class="btn-continue">Продолжить покупки</a>
+                        <a href="{% url 'shop:checkout' %}" class="btn-checkout">Оформить заказ</a>
+                    </div>
+                {% else %}
+                    <div class="empty-cart">
+                        <p>Ваша корзина пуста</p>
+                        <a href="{% url 'shop:catalog' %}" class="btn-continue" style="display:inline-block;margin-top:16px;">Перейти в каталог</a>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>✦ Flower<span>Power</span></h3>
+                    <p>Цветы с душой по всей России</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Каталог</h4>
+                    <a href="{% url 'shop:catalog' %}">Все цветы</a>
+                    <a href="{% url 'shop:catalog' %}?sort=new">Новинки</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Контакты</h4>
+                    <a href="#">+7 (999) 999-99-99</a>
+                    <a href="#">info@flowerpower.ru</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 FlowerPower. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

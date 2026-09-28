@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация — FlowerPower</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="{% url 'shop:index' %}" class="logo">
+                    <span class="logo-icon">✦</span>
+                    <span class="logo-text">Flower<span>Power</span></span>
+                </a>
+                <form action="{% url 'shop:catalog' %}" method="GET" class="search-form">
+                    <input type="text" name="search" placeholder="Поиск цветов..." class="search-input">
+                    <button type="submit" class="search-btn">Х</button>
+                </form>
+                <div class="nav-right">
+                    <a href="{% url 'shop:catalog' %}" class="nav-link">Каталог</a>
+                    <a href="{% url 'shop:login' %}" class="nav-link">Войти</a>
+                    <a href="{% url 'shop:register' %}" class="nav-link btn-primary">Регистрация</a>
+                    <a href="{% url 'shop:cart' %}" class="nav-link cart-link">
+                        🛒
+                        {% if cart_count > 0 %}
+                            <span class="cart-badge">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-form">
+                    <h2>Регистрация</h2>
+                    <p class="subtitle">Создайте аккаунт, чтобы оформлять заказы</p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label>Имя пользователя</label>
+                            <input type="text" name="username" placeholder="Придумайте логин" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Имя</label>
+                            <input type="text" name="first_name" placeholder="Ваше имя" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Фамилия</label>
+                            <input type="text" name="last_name" placeholder="Ваша фамилия" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" placeholder="you@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Пароль</label>
+                            <input type="password" name="password1" placeholder="Придумайте пароль" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Повторите пароль</label>
+                            <input type="password" name="password2" placeholder="Повторите пароль" required>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Зарегистрироваться</button>
+                    </form>
+
+                    <div class="auth-links">
+                        Уже есть аккаунт? <a href="{% url 'shop:login' %}">Войти</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>✦ Flower<span>Power</span></h3>
+                    <p>Цветы с душой по всей России</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Каталог</h4>
+                    <a href="{% url 'shop:catalog' %}">Все цветы</a>
+                    <a href="{% url 'shop:catalog' %}?sort=new">Новинки</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Контакты</h4>
+                    <a href="#">+7 (999) 999-99-99</a>
+                    <a href="#">info@flowerpower.ru</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 FlowerPower. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

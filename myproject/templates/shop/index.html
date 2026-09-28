@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowerPower — цветы с доставкой</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="{% url 'shop:index' %}" class="logo">
+                    <span class="logo-icon">✦</span>
+                    <span class="logo-text">Flower<span>Power</span></span>
+                </a>
+                <form action="{% url 'shop:catalog' %}" method="GET" class="search-form">
+                    <input type="text" name="search" placeholder="Поиск цветов..." class="search-input">
+                    <button type="submit" class="search-btn">Х</button>
+                </form>
+                <div class="nav-right">
+                    <a href="{% url 'shop:catalog' %}" class="nav-link">Каталог</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'shop:profile' %}" class="nav-link">{{ user.username }}</a>
+                        <a href="{% url 'shop:logout' %}" class="nav-link">Выйти</a>
+                    {% else %}
+                        <a href="{% url 'shop:login' %}" class="nav-link">Войти</a>
+                        <a href="{% url 'shop:register' %}" class="nav-link btn-primary">Начать</a>
+                    {% endif %}
+                    <a href="{% url 'shop:cart' %}" class="nav-link cart-link">
+                        🛒
+                        {% if cart_count > 0 %}
+                            <span class="cart-badge">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+<!--ГЛАВНЫЙ ЭКРАН-->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-content">
+                        <p class="eyebrow">Свежий срез, каждый день</p>
+                        <h1>Букеты<br>для <span>особенных</span><br>моментов</h1>
+                        <p>Собираем вручную из свежих цветов и доставляем по всей России — от первого свидания до большого юбилея.</p>
+                        <a href="{% url 'shop:catalog' %}" class="btn-hero">Выбрать букет</a>
+                    </div>
+                    <div class="hero-image">
+                        <img src="/media/products/buket-roz.jpg" alt="Букет роз FlowerPower">
+                        <div class="glass-overlay"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">✦</span>
+                        <h3>Свежесть</h3>
+                        <p>Цветы напрямую от поставщиков</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">✦</span>
+                        <h3>Доставка</h3>
+                        <p>По всей России за 24 часа</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">✦</span>
+                        <h3>Выбор</h3>
+                        <p>Более 200 сортов цветов</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">✦</span>
+                        <h3>Забота</h3>
+                        <p>Поддержка 24/7</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Категории</h2>
+                    <a href="{% url 'shop:catalog' %}" class="section-link">Все →</a>
+                </div>
+                <div class="categories-grid">
+                    {% for category in categories %}
+                        <a href="{% url 'shop:catalog' %}?category={{ category.slug }}" class="category-card">
+                            <span class="category-icon">✦</span>
+                            <h3>{{ category.name }}</h3>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="products-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><span>Новинки</span></h2>
+                    <a href="{% url 'shop:catalog' %}?sort=new" class="section-link">Все новинки →</a>
+                </div>
+                <div class="products-grid">
+                    {% for product in new_products %}
+                        {% cycle "buket-roz.jpg" "red-white.jpg" "redfff.jpg" "sunshine.jpg" "blue.jpg" as new_img silent %}
+                        <div class="product-card">
+                            <a href="{% url 'shop:product_detail' product.slug %}" style="text-decoration:none;color:inherit;">
+                                <div class="product-image">
+                                    <img src="/media/products/{{ new_img }}" alt="{{ product.name }}">
+                                </div>
+                            </a>
+                            <div class="product-info">
+                                <h3>{{ product.name }}</h3>
+                                <p class="product-category">{{ product.category.name }}</p>
+                                <div class="product-price">
+                                    {% if product.discount_price %}
+                                        <span class="price-old">{{ product.price }} ₽</span>
+                                        <span class="price-current">{{ product.discount_price }} ₽</span>
+                                    {% else %}
+                                        <span class="price-current">{{ product.price }} ₽</span>
+                                    {% endif %}
+                                </div>
+                                <form method="POST" action="{% url 'shop:add_to_cart' product.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn-add-cart">В корзину</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="gallery-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Наши <span>работы</span></h2>
+                    <a href="#" class="section-link">Instagram →</a>
+                </div>
+                <div class="gallery-grid">
+                    <div class="gallery-tile gallery-tile--main">
+                        <img src="/media/products/buket-roz.jpg" alt="Букет FlowerPower">
+                    </div>
+                    <div class="gallery-tile">
+                        <img src="/media/products/red-white.jpg" alt="Красно-белая композиция">
+                    </div>
+                    <div class="gallery-tile">
+                        <img src="/media/products/redfff.jpg" alt="Букет FlowerPower">
+                    </div>
+                    <div class="gallery-tile">
+                        <img src="/media/products/sunshine.jpg" alt="Солнечная композиция">
+                    </div>
+                    <div class="gallery-tile">
+                        <img src="/media/products/blue.jpg" alt="Синяя композиция">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="reviews-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><span>Отзывы</span></h2>
+                    <a href="/" class="section-link">Оставить отзыв →</a>
+                </div>
+                <div class="reviews-grid">
+                    {% for review in reviews %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                <span class="reviewer-name">{{ review.user.get_full_name|default:review.user.username }}</span>
+                                <span class="review-date">{{ review.created_at|date:"d.m.Y" }}</span>
+                            </div>
+                            <div class="review-rating">
+                                {% for i in "12345"|make_list %}
+                                    <span class="star {% if forloop.counter <= review.rating %}filled{% endif %}">★</span>
+                                {% endfor %}
+                            </div>
+                            <p class="review-text">{{ review.text|truncatewords:25 }}</p>
+                            {% if review.is_verified %}
+                                <span class="review-verified">✓ Подтвержденный заказ</span>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <p style="grid-column:1/-1;text-align:center;color:#999;padding:40px;">Пока нет отзывов. Будьте первым!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>✦ Flower<span>Power</span></h3>
+                    <p>Цветы с душой по всей России</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Каталог</h4>
+                    <a href="{% url 'shop:catalog' %}">Все цветы</a>
+                    <a href="{% url 'shop:catalog' %}?sort=new">Новинки</a>
+                    <a href="{% url 'shop:catalog' %}?sort=price_asc">Цена ↑</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Контакты</h4>
+                    <a href="#">+7 (999) 999-99-99</a>
+                    <a href="#">info@flowerpower.ru</a>
+                    <a href="#">Instagram</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 FlowerPower. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
